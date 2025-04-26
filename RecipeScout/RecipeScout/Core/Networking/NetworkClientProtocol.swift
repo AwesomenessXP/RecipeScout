@@ -8,5 +8,5 @@
 import Foundation
 
 protocol NetworkClientProtocol {
-    func fetch(from url: URL) async throws -> Data
+    func fetch(from url: URL?) async throws -> Data
 }
