@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct RecipeScoutApp: App {
+    let diContainer = DIContainer()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RecipeListsView(viewModel: diContainer.createRecipeViewModel())
         }
     }
 }

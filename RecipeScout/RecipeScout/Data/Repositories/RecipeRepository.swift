@@ -8,7 +8,7 @@
 import Foundation
 
 protocol RecipeRepositoryProtocol {
-    func fetchRecipes() async throws -> [RecipeEntity]
+    func fetchRecipes(from url: URL?) async throws -> [RecipeEntity]
 }
 
 class RecipeRepository: RecipeRepositoryProtocol {
@@ -18,21 +18,31 @@ class RecipeRepository: RecipeRepositoryProtocol {
         self.networkClient = networkClient
     }
     
-    public func fetchRecipes() async throws -> [RecipeEntity] {
-        let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")
-        
-        let recipes = try await self.networkClient.fetch(from: url)
-        let decodedRecipes = try JSONDecoder().decode(RecipesDTO.self, from: recipes)
-        let recipeDTOs: [RecipeDTO] = decodedRecipes.recipes
-        let mappedRecipes: [Recipe] = try self.mapToRecipes(recipeDTOs: recipeDTOs)
-        let mappedRecipeEntities: [RecipeEntity] = self.mapToRecipeEntities(recipes: mappedRecipes)
-        
-        return mappedRecipeEntities
+    public func fetchRecipes(from url: URL?) async throws -> [RecipeEntity] {
+        do {
+            let recipes = try await self.networkClient.fetch(from: url)
+            let decodedRecipes = try JSONDecoder().decode(RecipesDTO.self, from: recipes)
+            let recipeDTOs: [RecipeDTO] = decodedRecipes.recipes
+            let mappedRecipes: [Recipe] = try self.mapToRecipes(recipeDTOs: recipeDTOs)
+            let mappedRecipeEntities: [RecipeEntity] = self.mapToRecipeEntities(recipes: mappedRecipes)
+            
+            return mappedRecipeEntities
+            
+        } catch let error as DecodeRecipeError {
+            throw RecipeRepositoryError.failedToDecodeRecipes(error)
+            
+        } catch let error as DecodingError {
+            throw RecipeRepositoryError.failedToDecodeRecipes(DecodeRecipeError.malformedData)
+            
+        } catch let error as NetworkError {
+            throw RecipeRepositoryError.networkError(error)
+            
+        }
     }
     
     private func mapToRecipes(recipeDTOs: [RecipeDTO]) throws -> [Recipe] {
         guard !recipeDTOs.isEmpty else {
-            throw DecodingError.emptyData
+            throw RecipeRepositoryError.failedToDecodeRecipes(DecodeRecipeError.emptyData)
         }
         
         let recipes: [Recipe] = recipeDTOs.compactMap { recipeDTO in
@@ -57,7 +67,7 @@ class RecipeRepository: RecipeRepositoryProtocol {
         }
         
         if recipes.count < recipeDTOs.count {
-            throw DecodingError.malformedData
+            throw RecipeRepositoryError.failedToDecodeRecipes(DecodeRecipeError.malformedData)
         }
         
         return recipes

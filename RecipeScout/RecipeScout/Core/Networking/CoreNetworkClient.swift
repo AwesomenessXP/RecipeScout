@@ -13,7 +13,6 @@ class CoreNetworkClient: NetworkClientProtocol {
         }
         
         var request = URLRequest(url: url)
-        
         request.httpMethod = "GET"
         
         let (data, response) = try await URLSession.shared.data(for: request)

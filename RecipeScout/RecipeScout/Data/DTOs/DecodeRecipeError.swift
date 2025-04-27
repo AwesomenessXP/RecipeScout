@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum DecodingError: Error {
+enum DecodeRecipeError: Error {
     case malformedData
     case emptyData
     
