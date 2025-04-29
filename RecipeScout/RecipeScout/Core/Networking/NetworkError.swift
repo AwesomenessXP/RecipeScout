@@ -31,7 +31,7 @@ enum NetworkError: Error, Equatable {
         case .invalidStatusCode(let code):
             return "Invalid status code: \(code)"
         case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
+            return "Network error: \(error)"
         }
     }
 }

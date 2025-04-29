@@ -46,7 +46,7 @@ final class FetchRecipesTests: XCTestCase {
             XCTFail("Expected fetchRecipes to throw, but it succeeded.")
             
         } catch let error as FetchRecipesError {
-            XCTAssertEqual(FetchRecipesError.failedToFetchRecipes(decodingError), error)
+            XCTAssertEqual(FetchRecipesError.malformedData, error)
             
         } catch {
             XCTFail("Expected RecipeRepositoryError, but got different error: \(error)")
@@ -63,7 +63,7 @@ final class FetchRecipesTests: XCTestCase {
             XCTFail("Expected fetchRecipes to throw, but it succeeded.")
             
         } catch let error as FetchRecipesError {
-            XCTAssertEqual(FetchRecipesError.failedToFetchRecipes(decodingError), error)
+            XCTAssertEqual(FetchRecipesError.emptyData, error)
             
         } catch {
             XCTFail("Expected RecipeRepositoryError, but got different error: \(error)")

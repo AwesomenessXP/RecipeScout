@@ -13,7 +13,7 @@ struct RecipeScoutApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RecipeListsView(viewModel: diContainer.createRecipeViewModel())
+            RecipeListsView(viewModel: diContainer.createRecipeViewModel(), imageLoader: diContainer.imageLoader)
         }
     }
 }

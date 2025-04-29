@@ -10,11 +10,15 @@ final class DIContainer {
     let networkClient: NetworkClientProtocol
     let recipeRepository: RecipeRepositoryProtocol
     let fetchRecipesUseCase: FetchRecipesUseCase
+    let imageCache: ImageCacheProtocol
+    let imageLoader: ImageLoader
     
     init() {
-        networkClient = CoreNetworkClient()
+        networkClient = NetworkClient()
         recipeRepository = RecipeRepository(networkClient: networkClient)
         fetchRecipesUseCase = FetchRecipesUseCase(repository: recipeRepository)
+        imageCache = ImageDiskCache(folder: "Images")
+        imageLoader = ImageLoader(diskCache: imageCache, networkClient: networkClient)
     }
     
     public func createRecipeViewModel() -> RecipeViewModel {

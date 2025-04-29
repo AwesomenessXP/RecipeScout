@@ -6,12 +6,18 @@
 //
 
 enum FetchRecipesError: Error, Equatable {
-    case failedToFetchRecipes(RecipeRepositoryError)
+    case emptyData
+    case malformedData
+    case networkError(NetworkError)
     
     var stringDescription: String {
         switch self {
-        case .failedToFetchRecipes(let error):
-            return "Failed to fetch recipes: \(error.localizedDescription)"
+        case .emptyData:
+            return "Empty data returned from the server."
+        case .malformedData:
+            return "Malformed data returned from the server."
+        case .networkError(let error):
+            return "Network error: \(error)"
         }
     }
 }

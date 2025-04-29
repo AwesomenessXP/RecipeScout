@@ -18,7 +18,17 @@ class FetchRecipesUseCase {
             let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")
             return try await repository.fetchRecipes(from: url)
         } catch (let error as RecipeRepositoryError) {
-            throw FetchRecipesError.failedToFetchRecipes(error)
+            switch error {
+            case .failedToDecodeRecipes(let repoError):
+                switch repoError {
+                case .emptyData:
+                    throw FetchRecipesError.emptyData
+                case .malformedData:
+                    throw FetchRecipesError.malformedData
+                }
+            case .networkError(let networkError):
+                throw FetchRecipesError.networkError(networkError)
+            }
         }
     }
 }

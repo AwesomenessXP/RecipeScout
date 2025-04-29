@@ -14,15 +14,12 @@ class MockNetworkClient: NetworkClientProtocol {
     var isBadURL: Bool = false
     
     func fetch(from url: URL?) async throws -> Data {
-        if isBadURL {
-            throw NetworkError.invalidURL
-        }
         if let error = mockError {
             throw error
         }
         if let data = mockData {
             return data
         }
-        throw NetworkError.networkError(URLError(.badServerResponse))
+        throw NetworkError.invalidURL
     }
 }

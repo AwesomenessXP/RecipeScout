@@ -141,10 +141,27 @@ final class RecipeRepositoryTests: XCTestCase {
     
     func testBadURL() async throws {
         let fetchError = NetworkError.invalidURL
-        mockNetworkClient.isBadURL = true
         
         do {
             let url = URL(string: "")
+            _ = try await recipeRepository.fetchRecipes(from: url)
+
+            XCTFail("Expected fetchRecipes to throw, but it succeeded.")
+            
+        } catch let error as RecipeRepositoryError {
+            XCTAssertEqual(error, RecipeRepositoryError.networkError(fetchError))
+            
+        } catch {
+            XCTFail("Expected NetworkError, but got different error: \(error)")
+        }
+    }
+    
+    func testInvalidStatusCode() async throws {
+        let fetchError = NetworkError.invalidStatusCode(404)
+        mockNetworkClient.mockError = fetchError
+        
+        do {
+            let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")
             _ = try await recipeRepository.fetchRecipes(from: url)
 
             XCTFail("Expected fetchRecipes to throw, but it succeeded.")
